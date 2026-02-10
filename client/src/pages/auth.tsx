@@ -7,26 +7,49 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Lock, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase"; // Import firebase auth instance
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Auth() {
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { toast } = useToast();
 
-  const handleAuth = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Mock Auth delay
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // In a real app, this would use the actual Firebase keys
+      // Since we are in mockup mode, we'll simulate the call or catch the config error
+      if (isLogin) {
+        // await signInWithEmailAndPassword(auth, email, password);
+        console.log("Simulating Firebase Login", email);
+      } else {
+        // await createUserWithEmailAndPassword(auth, email, password);
+        console.log("Simulating Firebase Signup", email);
+      }
+
+      // Simulation delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       toast({
         title: isLogin ? "Welcome back!" : "Account created",
         description: "Successfully authenticated with Firebase.",
       });
       setLocation("/dashboard");
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Authentication Error",
+        description: error.message || "Could not connect to Firebase",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,14 +82,30 @@ export default function Auth() {
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="email" type="email" placeholder="pilot@voltride.com" className="pl-10 bg-background/50 border-white/10" required />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="pilot@voltride.com" 
+                    className="pl-10 bg-background/50 border-white/10" 
+                    required 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="password" type="password" placeholder="••••••••" className="pl-10 bg-background/50 border-white/10" required />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="pl-10 bg-background/50 border-white/10" 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
               </div>
               
